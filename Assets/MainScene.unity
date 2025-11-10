@@ -468,7 +468,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.3897178, y: 0.573}
   m_AnchorMax: {x: 0.3897178, y: 0.573}
-  m_AnchoredPosition: {x: -200, y: 164}
+  m_AnchoredPosition: {x: -193.11, y: 108}
   m_SizeDelta: {x: 300, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &198728070
@@ -536,7 +536,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.3897178, y: 0.573}
   m_AnchorMax: {x: 0.3897178, y: 0.573}
-  m_AnchoredPosition: {x: -198, y: 76}
+  m_AnchoredPosition: {x: -193.11, y: 21}
   m_SizeDelta: {x: 300, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &276489234
@@ -632,34 +632,27 @@ MonoBehaviour:
   player: {fileID: 1617599}
   minSpawnInterval: 0.7
   spawnItems:
-  - nameLabel: BigFruit
+  - nameLabel: 
     prefab: {fileID: 5912579668489593799, guid: 1c8172785b80b3d4bb7090ad323cb628, type: 3}
     spawnWeight: 50
-    scoreValue: 5
+    scoreValue: 10
     healthImpact: 0
     minFallSpeed: 3
     maxFallSpeed: 4
-  - nameLabel: Heart
+  - nameLabel: 
     prefab: {fileID: 5912579668489593799, guid: 524fd59df730dd44097d19fa32ad215c, type: 3}
-    spawnWeight: 3
-    scoreValue: 0
-    healthImpact: 1
+    spawnWeight: 25
+    scoreValue: -5
+    healthImpact: 0
     minFallSpeed: 3
     maxFallSpeed: 4
-  - nameLabel: Bomb
+  - nameLabel: 
     prefab: {fileID: 2998369181034090052, guid: 37457d06bd27bd341864f84aa1ae60e9, type: 3}
     spawnWeight: 25
-    scoreValue: 5
+    scoreValue: 0
     healthImpact: -1
     minFallSpeed: 5
     maxFallSpeed: 6
-  - nameLabel: BigFruit
-    prefab: {fileID: 5912579668489593799, guid: 1c8172785b80b3d4bb7090ad323cb628, type: 3}
-    spawnWeight: 50
-    scoreValue: 5
-    healthImpact: 0
-    minFallSpeed: 3
-    maxFallSpeed: 4
   spawnInterval: 0.8
   spawnYOffset: 1
   startingHealth: 3
@@ -1032,7 +1025,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.3897178, y: 0.573}
   m_AnchorMax: {x: 0.3897178, y: 0.573}
-  m_AnchoredPosition: {x: -200, y: 121}
+  m_AnchoredPosition: {x: -193.11, y: 64}
   m_SizeDelta: {x: 300, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1182680320
