@@ -11,8 +11,7 @@ public class MainMenu : MonoBehaviour
 
     public void NewGame()
     {
-        // Load scene chính (bạn phải add scene đó vào Build Settings)
-        SceneManager.LoadScene("GameScene");
+        SceneManager.LoadScene("MainScene");
     }
 
     public void ContinueGame()
