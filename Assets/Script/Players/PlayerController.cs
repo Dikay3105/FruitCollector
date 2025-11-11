@@ -7,10 +7,12 @@ public class PlayerController : MonoBehaviour
 
     private float minX, maxX, halfWidth;
     private Rigidbody2D rb;
+    private Animator animator;
 
     void Start()
     {
         rb = GetComponent<Rigidbody2D>();
+        animator = GetComponent<Animator>(); // gán animator
 
         float zDist = Mathf.Abs(Camera.main.transform.position.z - transform.position.z);
         Vector3 leftEdge = Camera.main.ScreenToWorldPoint(new Vector3(0, 0, zDist));
@@ -34,6 +36,26 @@ public class PlayerController : MonoBehaviour
         Vector3 pos = transform.position;
         pos.x = Mathf.Clamp(pos.x, minX, maxX);
         transform.position = pos;
+
+        // ✅ Animation
+        if (animator != null)
+        {
+            if (inputX < 0)       // di chuyển trái
+            {
+                animator.SetBool("moveL", true);
+                animator.SetBool("moveR", false);
+            }
+            else if (inputX > 0)  // di chuyển phải
+            {
+                animator.SetBool("moveL", false);
+                animator.SetBool("moveR", true);
+            }
+            else                  // đứng yên
+            {
+                animator.SetBool("moveL", false);
+                animator.SetBool("moveR", false);
+            }
+        }
     }
 
     public void IncreaseSpeed(float amount)

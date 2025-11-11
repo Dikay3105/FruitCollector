@@ -25,9 +25,31 @@ public class GameManager : MonoBehaviour
     private float minX, maxX;
     private float topY;
 
+     void Awake()
+    {
+        // Tắt VSync
+        QualitySettings.vSyncCount = 0;
+
+        // Unlimited FPS
+        Application.targetFrameRate = -1;
+    }
+
     void Start()
     {
         health = startingHealth;
+
+ // Lấy SpriteRenderer
+    SpriteRenderer sr = GetComponent<SpriteRenderer>();
+    if (sr != null && sr.sprite != null)
+    {
+        // Kích thước mong muốn (height) trong Unity units
+        float targetHeight = 1f; // 1 unit = chiều cao nhân vật
+        float scale = targetHeight / sr.sprite.bounds.size.y;
+
+        // Scale cả X và Y theo tỉ lệ
+        transform.localScale = new Vector3(scale, scale, 1f);
+    }
+
         ComputeScreenBounds();
         ComputeWeightedItemsForLevel(); // tính weight theo level
         UpdateUI();
@@ -68,34 +90,47 @@ public class GameManager : MonoBehaviour
         float y = topY + spawnYOffset;
         GameObject obj = Instantiate(selected.prefab, new Vector3(x, y, 0f), Quaternion.identity);
 
-        // gán Order in Layer = 2
+        // Random Sprite nếu là fruit
+        bool isFruit = selected.nameLabel.ToLower().Contains("fruit");
         SpriteRenderer sr = obj.GetComponent<SpriteRenderer>();
-        if (sr != null) sr.sortingOrder = 2;
+        if (sr != null)
+        {
+            sr.sortingOrder = 2;
+
+            if (isFruit && selected.fruitSprites != null && selected.fruitSprites.Length > 0)
+            {
+                int idx = Random.Range(0, selected.fruitSprites.Length);
+                sr.sprite = selected.fruitSprites[idx];
+
+                // Scale object dựa theo size của sprite
+                Vector2 spriteSize = sr.sprite.bounds.size;   // size thật của sprite
+                float targetHeight = 1f; // chiều cao mong muốn (1 unit)
+                float scale = targetHeight / spriteSize.y;   // scale = target / actual
+                obj.transform.localScale = new Vector3(scale, scale, 1f);
+            }
+        }
+
 
         // gán tốc độ rơi
         FallingObject fo = obj.GetComponent<FallingObject>();
         if (fo == null) fo = obj.AddComponent<FallingObject>();
 
-        bool isFruit = selected.nameLabel.ToLower().Contains("fruit");
-        bool isBombOrGear = !isFruit;
-
         if (isFruit)
         {
-            // Trái cây tốc độ bình thường
             fo.fallSpeed = Random.Range(selected.minFallSpeed, selected.maxFallSpeed);
         }
-        else if (isBombOrGear)
+        else
         {
-            // Bom/gear tăng tốc theo level
             float speedMultiplier = 1f + (level - 1) * 0.1f;
             fo.fallSpeed = Random.Range(selected.minFallSpeed, selected.maxFallSpeed) * speedMultiplier;
         }
 
-        // gắn PickupData để Basket có thể đọc
+        // gắn PickupData
         PickupData pd = obj.GetComponent<PickupData>();
         if (pd == null) pd = obj.AddComponent<PickupData>();
         pd.Setup(selected.scoreValue, selected.healthImpact);
     }
+
 
     SpawnItem GetRandomItemWeighted()
     {
