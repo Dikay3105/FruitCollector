@@ -28,20 +28,10 @@ public class GameManager : MonoBehaviour
     void Start()
     {
         health = startingHealth;
-        ComputeTotalWeight();
         ComputeScreenBounds();
+        ComputeWeightedItemsForLevel(); // tính weight theo level
         UpdateUI();
         InvokeRepeating(nameof(SpawnObject), 1f, spawnInterval);
-    }
-
-    void ComputeTotalWeight()
-    {
-        totalWeight = 0f;
-        foreach (var item in spawnItems)
-        {
-            totalWeight += Mathf.Max(0f, item.spawnWeight);
-        }
-        if (totalWeight == 0f) totalWeight = 1f; // phòng thủ
     }
 
     void ComputeScreenBounds()
@@ -50,6 +40,23 @@ public class GameManager : MonoBehaviour
         minX = -right.x + 0.5f; // padding 0.5
         maxX = right.x - 0.5f;
         topY = Camera.main.transform.position.y + Camera.main.orthographicSize;
+    }
+
+    // Tính tổng weight dựa theo level
+    void ComputeWeightedItemsForLevel()
+    {
+        totalWeight = 0f;
+        foreach (var item in spawnItems)
+        {
+            bool isFruit = item.nameLabel.ToLower().Contains("fruit");
+            if (!isFruit)
+            {
+                // tăng spawnWeight bom/gear theo level (ví dụ +10% mỗi level)
+                item.spawnWeight *= 1f + (level - 1) * 0.1f;
+            }
+            totalWeight += Mathf.Max(0f, item.spawnWeight);
+        }
+        if (totalWeight == 0f) totalWeight = 1f;
     }
 
     void SpawnObject()
@@ -61,17 +68,27 @@ public class GameManager : MonoBehaviour
         float y = topY + spawnYOffset;
         GameObject obj = Instantiate(selected.prefab, new Vector3(x, y, 0f), Quaternion.identity);
 
-        // gán tốc độ rơi random
+        // gán Order in Layer = 2
+        SpriteRenderer sr = obj.GetComponent<SpriteRenderer>();
+        if (sr != null) sr.sortingOrder = 2;
+
+        // gán tốc độ rơi
         FallingObject fo = obj.GetComponent<FallingObject>();
-        if (fo != null)
+        if (fo == null) fo = obj.AddComponent<FallingObject>();
+
+        bool isFruit = selected.nameLabel.ToLower().Contains("fruit");
+        bool isBombOrGear = !isFruit;
+
+        if (isFruit)
         {
+            // Trái cây tốc độ bình thường
             fo.fallSpeed = Random.Range(selected.minFallSpeed, selected.maxFallSpeed);
         }
-        else
+        else if (isBombOrGear)
         {
-            // nếu prefab chưa có FallingObject, thêm component
-            fo = obj.AddComponent<FallingObject>();
-            fo.fallSpeed = Random.Range(selected.minFallSpeed, selected.maxFallSpeed);
+            // Bom/gear tăng tốc theo level
+            float speedMultiplier = 1f + (level - 1) * 0.1f;
+            fo.fallSpeed = Random.Range(selected.minFallSpeed, selected.maxFallSpeed) * speedMultiplier;
         }
 
         // gắn PickupData để Basket có thể đọc
@@ -96,38 +113,41 @@ public class GameManager : MonoBehaviour
     {
         score += amount;
         if (score < 0) score = 0;
-        // level logic: ví dụ lên level mỗi 10 điểm
-       int requiredScore = level * 20; // mỗi level cần thêm 20 điểm
+
+        int requiredScore = level * 20; // mỗi level cần 20 điểm
         if (score >= requiredScore)
         {
             LevelUp(level + 1);
         }
+
         UpdateUI();
     }
 
     public void ChangeHealth(int delta)
     {
-        health += delta; // delta có thể +1 (heal) hoặc -1 (damage)
+        health += delta;
         UpdateUI();
         if (health <= 0) GameOver();
     }
 
     void LevelUp(int newLevel)
-{
-    level = newLevel;
+    {
+        level = newLevel;
 
-    // Giảm tốc độ spawn nhưng không thấp hơn giới hạn
-    spawnInterval *= difficultyMultiplierPerLevel;
-    spawnInterval = Mathf.Max(spawnInterval, minSpawnInterval);
+        // Tăng tỉ lệ bom/gear
+        ComputeWeightedItemsForLevel();
 
-    // Tăng tốc độ người chơi
-    player.IncreaseSpeed(1.5f);
+        // Giảm spawnInterval nhưng không thấp hơn giới hạn
+        spawnInterval *= difficultyMultiplierPerLevel;
+        spawnInterval = Mathf.Max(spawnInterval, minSpawnInterval);
 
-    // Restart spawn timer
-    CancelInvoke(nameof(SpawnObject));
-    InvokeRepeating(nameof(SpawnObject), 0.5f, spawnInterval);
-}
+        // Tăng tốc độ người chơi
+        player.IncreaseSpeed(1.5f);
 
+        // Restart spawn timer
+        CancelInvoke(nameof(SpawnObject));
+        InvokeRepeating(nameof(SpawnObject), 0.5f, spawnInterval);
+    }
 
     void GameOver()
     {
@@ -142,3 +162,4 @@ public class GameManager : MonoBehaviour
         if (levelText) levelText.text = "Level: " + level;
     }
 }
+
