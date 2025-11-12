@@ -38,7 +38,7 @@ public class GameManager : MonoBehaviour
     {
         health = startingHealth;
 
- // Lấy SpriteRenderer
+    // Lấy SpriteRenderer
     SpriteRenderer sr = GetComponent<SpriteRenderer>();
     if (sr != null && sr.sprite != null)
     {
@@ -73,8 +73,8 @@ public class GameManager : MonoBehaviour
             bool isFruit = item.nameLabel.ToLower().Contains("fruit");
             if (!isFruit)
             {
-                // tăng spawnWeight bom/gear theo level (ví dụ +10% mỗi level)
-                item.spawnWeight *= 1f + (level - 1) * 0.1f;
+                // tăng spawnWeight bom/gear theo level (ví dụ +1% mỗi level)
+                item.spawnWeight *= 1f + (level - 1) * 0.01f;
             }
             totalWeight += Mathf.Max(0f, item.spawnWeight);
         }
@@ -102,10 +102,9 @@ public class GameManager : MonoBehaviour
                 int idx = Random.Range(0, selected.fruitSprites.Length);
                 sr.sprite = selected.fruitSprites[idx];
 
-                // Scale object dựa theo size của sprite
-                Vector2 spriteSize = sr.sprite.bounds.size;   // size thật của sprite
-                float targetHeight = 1f; // chiều cao mong muốn (1 unit)
-                float scale = targetHeight / spriteSize.y;   // scale = target / actual
+                Vector2 spriteSize = sr.sprite.bounds.size;   // Kích thước gốc của sprite (đơn vị world)
+                float targetWidth = 1f;                     // Chiều ngang mong muốn (1 unit chẳng hạn)
+                float scale = targetWidth / spriteSize.x;     // Tính scale dựa theo chiều ngang
                 obj.transform.localScale = new Vector3(scale, scale, 1f);
             }
         }
@@ -121,7 +120,7 @@ public class GameManager : MonoBehaviour
         }
         else
         {
-            float speedMultiplier = 1f + (level - 1) * 0.1f;
+            float speedMultiplier = 1f + (level - 1) * 0.01f;
             fo.fallSpeed = Random.Range(selected.minFallSpeed, selected.maxFallSpeed) * speedMultiplier;
         }
 

@@ -40,21 +40,7 @@ public class PlayerController : MonoBehaviour
         // ✅ Animation
         if (animator != null)
         {
-            if (inputX < 0)       // di chuyển trái
-            {
-                animator.SetBool("moveL", true);
-                animator.SetBool("moveR", false);
-            }
-            else if (inputX > 0)  // di chuyển phải
-            {
-                animator.SetBool("moveL", false);
-                animator.SetBool("moveR", true);
-            }
-            else                  // đứng yên
-            {
-                animator.SetBool("moveL", false);
-                animator.SetBool("moveR", false);
-            }
+            animator.SetFloat("MoveX", inputX);
         }
     }
 

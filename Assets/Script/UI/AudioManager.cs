@@ -7,6 +7,10 @@ public class AudioManager : MonoBehaviour
     public AudioSource bgmSource;
     public Slider volumeSlider;
 
+    [Header("BGM Clips")]
+    public AudioClip mainMenuMusic;
+    public AudioClip gameplayMusic;
+
     void Awake()
     {
         if (Instance == null)
@@ -57,4 +61,15 @@ public class AudioManager : MonoBehaviour
         PlayerPrefs.SetFloat("BGMVolume", value);
         PlayerPrefs.Save();
     }
+
+    public void PlayBGM(AudioClip clip)
+    {
+        if (bgmSource == null || clip == null) return;
+
+        if (bgmSource.clip == clip && bgmSource.isPlaying) return; // đang phát rồi thì không restart
+
+        bgmSource.clip = clip;
+        bgmSource.Play();
+    }
+
 }
